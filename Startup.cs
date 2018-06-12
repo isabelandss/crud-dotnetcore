@@ -1,18 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
+﻿using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using ApiUsuarios.Models;
 using ApiUsuarios.Repositories;
 using ApiUsuarios.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 
 namespace ApiUsuarios
 {
@@ -34,6 +32,33 @@ namespace ApiUsuarios
             services.AddTransient<IPokemonRepository, PokemonRepository>();
             services.AddTransient<HttpService>();
             services.AddTransient<HttpClient>();
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options => {
+                    options.TokenValidationParameters = new TokenValidationParameters {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = "isabela",
+                        ValidAudience = "isabela",
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["SecurityKey"]))
+                    };
+
+                    options.Events = new JwtBearerEvents 
+                    {
+                        OnAuthenticationFailed = context => 
+                        {
+                            return Task.CompletedTask;
+                        },
+                        OnTokenValidated = context => 
+                        {
+                            return Task.CompletedTask;
+                        }
+                    };
+                }
+            );
+
             services.AddMvc();
         }
 
@@ -45,6 +70,7 @@ namespace ApiUsuarios
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseAuthentication();
             app.UseMvc();
         }
     }

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using ApiUsuarios.Models;
 using ApiUsuarios.Repositories;
+using ApiUsuarios.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -29,6 +31,9 @@ namespace ApiUsuarios
             services.AddDbContext<Context>(options => 
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddTransient<IEmployeeRepository, EmployeeRepository>();
+            services.AddTransient<IPokemonRepository, PokemonRepository>();
+            services.AddTransient<HttpService>();
+            services.AddTransient<HttpClient>();
             services.AddMvc();
         }
 

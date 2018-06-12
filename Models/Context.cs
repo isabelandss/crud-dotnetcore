@@ -8,5 +8,6 @@ namespace ApiUsuarios.Models
             : base(options) { }
 
         public DbSet<Employee> Employees { get; set; }
+        public DbSet<Pokemon> Pokemons { get; set; }
     }
 }
